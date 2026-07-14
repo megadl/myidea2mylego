@@ -90,5 +90,9 @@ tests/             unit tests (CIEDE2000 reference pairs, invariants)
 .venv/bin/pytest
 ```
 
+## License
+
+Licensed under the [Apache License 2.0](LICENSE).
+
 *LEGO® is a trademark of the LEGO Group, which does not sponsor, authorize or
 endorse this project. Prices are rough estimates; check sellers for real ones.*
