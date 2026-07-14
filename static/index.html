@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MyIDEA2MyLEGO — build your dreams, brick by brick</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='10' y='35' width='80' height='55' rx='8' fill='%23e3000b'/><circle cx='32' cy='35' r='14' fill='%23e3000b'/><circle cx='68' cy='35' r='14' fill='%23e3000b'/></svg>">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="logo">
+      <span class="logo-brick"><i></i><i></i></span>
+      <h1>MyIDEA<span class="accent2">2</span>MyLEGO</h1>
+    </div>
+    <p class="tagline">A paradise of LEGO dreams — drop in a picture, get bricks, instructions
+    and a shopping list back.</p>
+  </div>
+</header>
+
+<main>
+  <!-- Step 1: image -->
+  <section class="card" id="step-upload">
+    <h2><span class="step">1</span> Pick your dream</h2>
+    <div id="dropzone" tabindex="0">
+      <input type="file" id="file-input" accept="image/*" hidden>
+      <div id="drop-hint">
+        <div class="drop-icon">🖼️</div>
+        <p><strong>Drop an image here</strong> or click to choose one</p>
+        <p class="muted">Photos, logos, pixel art, drawings — anything goes.
+        Clean backgrounds work best for 3D statues.</p>
+      </div>
+      <img id="preview-img" alt="" hidden>
+    </div>
+  </section>
+
+  <!-- Step 2: options -->
+  <section class="card" id="step-options">
+    <h2><span class="step">2</span> Choose your build</h2>
+
+    <div class="mode-grid" id="mode-grid">
+      <label class="mode-card selected" data-mode="mosaic">
+        <input type="radio" name="mode" value="mosaic" checked>
+        <span class="mode-emoji">🎨</span>
+        <span class="mode-name">Mosaic</span>
+        <span class="mode-desc">Flat wall-art made of plates. Works with every image.</span>
+      </label>
+      <label class="mode-card" data-mode="statue">
+        <input type="radio" name="mode" value="statue">
+        <span class="mode-emoji">🗽</span>
+        <span class="mode-name">3D Statue</span>
+        <span class="mode-desc">Cuts out the subject and extrudes it into a standing model.</span>
+      </label>
+      <label class="mode-card" data-mode="relief">
+        <input type="radio" name="mode" value="relief">
+        <span class="mode-emoji">⛰️</span>
+        <span class="mode-name">3D Relief</span>
+        <span class="mode-desc">Brightness becomes height — a sculpted, touchable picture.</span>
+      </label>
+    </div>
+
+    <div class="options-row">
+      <div class="opt">
+        <label for="opt-width">Width <output id="width-out">48</output> studs</label>
+        <input type="range" id="opt-width" min="16" max="112" step="4" value="48">
+        <div class="muted" id="width-note">48 studs ≈ 38 cm wide</div>
+      </div>
+      <div class="opt">
+        <label for="opt-palette">Colors</label>
+        <select id="opt-palette">
+          <option value="full">Full palette (40 LEGO colors)</option>
+          <option value="classic">Classic 10 (cheap &amp; easy to buy)</option>
+          <option value="grayscale">Grayscale (photo look)</option>
+        </select>
+      </div>
+
+      <div class="opt mosaic-only">
+        <label class="check"><input type="checkbox" id="opt-dither"> Dithering
+          <span class="muted">smoother photo gradients</span></label>
+        <label class="check"><input type="checkbox" id="opt-optimize" checked> Merge into big plates
+          <span class="muted">fewer pieces, lower cost</span></label>
+      </div>
+
+      <div class="opt statue-only" hidden>
+        <label for="opt-depth">Depth <output id="depth-out">4</output> studs</label>
+        <input type="range" id="opt-depth" min="2" max="12" step="1" value="4">
+        <label class="check"><input type="checkbox" id="opt-hollow" checked> Hollow inside
+          <span class="muted">saves a lot of bricks</span></label>
+      </div>
+
+      <div class="opt relief-only" hidden>
+        <label for="opt-relief-height">Max height <output id="relief-height-out">8</output> bricks</label>
+        <input type="range" id="opt-relief-height" min="3" max="16" step="1" value="8">
+        <label class="check"><input type="checkbox" id="opt-invert"> Invert
+          <span class="muted">dark areas become tall</span></label>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 3: go -->
+  <section class="card center" id="step-go">
+    <button id="build-btn" disabled>
+      <span class="btn-brick"><i></i><i></i></span> Build my dream
+    </button>
+    <div id="status" class="muted"></div>
+  </section>
+
+  <!-- Results -->
+  <section id="results" hidden>
+    <div class="card">
+      <h2><span class="step">✓</span> Your build is ready!</h2>
+      <div class="stats-row" id="stats-row"></div>
+      <div id="stability-note" hidden></div>
+    </div>
+
+    <div class="card">
+      <nav class="tabs">
+        <button class="tab selected" data-tab="preview">🧱 Preview</button>
+        <button class="tab" data-tab="instructions">📖 How to build</button>
+        <button class="tab" data-tab="parts">🛒 Parts &amp; where to buy</button>
+      </nav>
+
+      <div class="tab-panel" id="panel-preview">
+        <div class="preview-tools">
+          <div class="tool three-d-only" hidden>
+            <label>Built up to layer <output id="layer-out">1</output></label>
+            <input type="range" id="layer-slider" min="1" max="1" value="1">
+          </div>
+          <button id="rotate-btn" class="tool three-d-only" hidden>↻ Rotate view</button>
+        </div>
+        <div class="canvas-wrap"><canvas id="preview-canvas"></canvas></div>
+      </div>
+
+      <div class="tab-panel" id="panel-instructions" hidden>
+        <div class="inst-tools">
+          <button id="inst-prev">◀</button>
+          <div class="inst-label" id="inst-label">Layer 1</div>
+          <button id="inst-next">▶</button>
+          <input type="range" id="inst-slider" min="1" max="1" value="1">
+        </div>
+        <div class="inst-flex">
+          <div class="canvas-wrap"><canvas id="inst-canvas"></canvas></div>
+          <div class="inst-parts">
+            <h3 id="inst-parts-title">Pieces in this layer</h3>
+            <ul id="inst-parts-list"></ul>
+          </div>
+        </div>
+        <p class="muted" id="inst-hint"></p>
+      </div>
+
+      <div class="tab-panel" id="panel-parts" hidden>
+        <div class="downloads" id="downloads"></div>
+        <div class="buy-cards">
+          <a class="buy-card" href="https://www.bricklink.com/v2/wanted/upload.page" target="_blank" rel="noopener">
+            <strong>BrickLink</strong>
+            <span>Download the <em>Wanted List XML</em> below, then upload it here to
+            buy every part from marketplace sellers. Usually the cheapest option.</span>
+          </a>
+          <a class="buy-card" href="https://www.lego.com/en-us/pick-and-build/pick-a-brick" target="_blank" rel="noopener">
+            <strong>LEGO® Pick a Brick</strong>
+            <span>Search each design ID (e.g. “3024”) and pick your colors — brand
+            new parts straight from LEGO.</span>
+          </a>
+          <a class="buy-card" href="https://rebrickable.com" target="_blank" rel="noopener">
+            <strong>Rebrickable</strong>
+            <span>Import the CSV below to check which parts you already own and
+            find sets containing the rest.</span>
+          </a>
+        </div>
+        <div class="bom-totals" id="bom-totals"></div>
+        <div class="table-wrap">
+          <table id="bom-table">
+            <thead>
+              <tr><th>Color</th><th>Part</th><th>ID</th><th class="num">Qty</th>
+                  <th class="num">Est. price</th><th></th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="muted">Price and weight are rough estimates from typical BrickLink
+        “new” averages; real prices vary by color and seller.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Made with ❤️ and studs. LEGO® is a trademark of the LEGO Group, which does not
+  sponsor or endorse this tool. Open your <code>model.ldr</code> in
+  LeoCAD, LDView, LPub3D or BrickLink Studio for photoreal renders and printable instructions.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
